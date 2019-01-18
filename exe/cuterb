@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require "cuterb"
+
+if ARGV.length != 3
+    puts "$ #{$0} text image output"
+    exit 1
+end
+
+c = CuteRB::CLI.new(ARGV[0], ARGV[1], ARGV[2])
+exit c.run()
