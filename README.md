@@ -1,5 +1,6 @@
 # CuteRB
 [sample/](https://github.com/lrks/cuteRB/tree/master/sample)
+
 <img src="https://raw.githubusercontent.com/lrks/cuteRB/master/sample/puhaa_qr.png" width="50%" />
 
 ```
