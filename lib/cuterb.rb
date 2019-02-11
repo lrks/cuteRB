@@ -2,6 +2,7 @@ require 'cuterb/version'
 require 'rqrcode'
 require_relative './utils.rb'
 require 'rmagick'
+require 'tempfile'
 
 module CuteRB
   class Error < StandardError; end
@@ -11,12 +12,31 @@ module CuteRB
       @qr = RQRCode::QRCode.new(text, :level => :h)
 
       @image = Magick::ImageList.new(image).first
-      @image = @image.crop(0, 0, [@image.columns, @image.rows].min, [@image.columns, @image.rows].min)
-      raise "#{image} too small." if @image.columns < @qr.module_count
+      short = [@image.columns, @image.rows].min
+      raise "#{image} too small." if short < @qr.module_count
+
+      # crop image
+      if @image.columns != @image.rows
+        begin
+          tmp = Tempfile.new(['cuterb-canny', '.png'])
+          system("convert #{image} -canny 0x1+10%+30% #{tmp.path}")
+          raise 'convert error' unless $?.success?
+          canny = Magick::ImageList.new(tmp.path).first
+          start = Utils.contents_area(canny)
+        rescue RuntimeError, Magick::ImageMagickError, Magick::FatalImageMagickError, Magick::DestroyedImageError => e
+          start = 0
+        end
+
+        if @image.columns == short
+          @image = @image.crop(0, start, short, start+short)
+        else
+          @image = @image.crop(start, 0, start+short, short)
+        end
+      end
       @image = @image.quantize(256, Magick::GRAYColorspace)
+
       bg = Magick::Image.new(@image.columns, @image.columns) { self.background_color = "white" }
       @image = bg.composite(@image, 0, 0, Magick::OverCompositeOp).normalize.contrast(true).contrast(true)
-
       @output = output
     end
 

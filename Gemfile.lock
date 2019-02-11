@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cuterb (0.1.0)
+    cuterb (0.2.0)
       rmagick
       rqrcode
 

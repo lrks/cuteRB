@@ -127,5 +127,28 @@ module CuteRB
         puts ""
       end
     end
+
+    def self.contents_area(canny)
+      short = [canny.columns, canny.rows].min
+      long = [canny.columns, canny.rows].max
+      integral = Array.new(long)
+      canny.rotate!(90, '>')
+
+      for y in 0...canny.rows
+        integral[y] = canny.export_pixels(0, y, canny.columns, 1, 'R').map{|px| px == 65535 ? 1 : 0}.sum(integral[y-1] || 0)
+      end
+
+      start = 0
+      count = 0
+      for offset in 0...(long-short)
+        c = integral[short + offset] - (integral[offset - 1] || 0)
+        if c > count
+          start = offset
+          count = c
+        end
+      end
+
+      return start
+    end
   end
 end

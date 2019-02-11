@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 require "cuterb"
 
+if ['-v', '--version'].include?(ARGV[0])
+  puts CuteRB::VERSION
+  exit 0
+end
+
 if ARGV.length != 3
 	puts "#{$0} TEXT INPUT_IMAGE_FILE OUTPUT_IMAGE_FILE"
   exit 1
