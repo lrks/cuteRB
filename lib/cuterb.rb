@@ -10,6 +10,7 @@ module CuteRB
   class CLI
     def initialize(text, image, output)
       @qr = RQRCode::QRCode.new(text, :level => :h)
+      @qr = @qr.qrcode if @qr.respond_to?(:qrcode)
 
       @image = Magick::ImageList.new(image).first
       short = [@image.columns, @image.rows].min
